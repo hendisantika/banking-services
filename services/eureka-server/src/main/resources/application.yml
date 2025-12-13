@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: eureka-server
+
+  config:
+    import: "optional:configserver:http://localhost:8888"
+
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1
