@@ -10,6 +10,8 @@ import id.my.hendisantika.accountservice.mapper.AccountMapper;
 import id.my.hendisantika.accountservice.mapper.CustomerMapper;
 import id.my.hendisantika.accountservice.repository.AccountRepository;
 import id.my.hendisantika.accountservice.repository.CustomerRepository;
+import id.my.hendisantika.accountservice.service.client.CardsClient;
+import id.my.hendisantika.accountservice.service.client.LoansClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
