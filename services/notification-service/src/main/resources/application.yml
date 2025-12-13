@@ -1,0 +1,44 @@
+server:
+  address: localhost
+  port: 9010
+
+spring:
+  application:
+    name: notification-service
+
+  cloud:
+    function:
+      definition: email|sms;transactions
+
+    stream:
+      bindings:
+        emailsms-in-0:
+          destination: welcome-notifications
+          group: ${spring.application.name}
+        transactions-in-0:
+          destination: transactions-notifications
+          group: ${spring.application.name}
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: 1234
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1
