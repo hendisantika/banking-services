@@ -1,0 +1,52 @@
+package id.my.hendisantika.accountservice.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+/**
+ * Created by IntelliJ IDEA.
+ * Project : banking-services
+ * User: hendisantika
+ * Link: s.id/hendisantika
+ * Email: hendisantika@yahoo.co.id
+ * Telegram : @hendisantika34
+ * Date: 13/12/25
+ * Time: 09.33
+ * To change this template use File | Settings | File Templates.
+ */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "transactions")
+public class Transaction {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
+
+    @Positive
+    private BigDecimal amount;
+
+    @Column(nullable = false)
+    private LocalDateTime date = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(name = "to_account_id", nullable = true)
+    private Account toAccount;
+
+    @ManyToOne
+    @JoinColumn(name = "from_account_id", nullable = true)
+    private Account fromAccount;
+}
