@@ -1,0 +1,104 @@
+version: "2.4"
+
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rmq-cont
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - 'rmq-data:/var/lib/rabbitmq'
+    networks:
+      - bank-ms-net
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: 1234
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.1
+    ports:
+      - "4000:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: 1234
+    command: "start-dev"
+
+  ## IN PROD ##
+  #postgres-keycloak:
+  #  extends:
+  #    file: common.yml
+  #    service: postgres-parent-service
+  #  ports:
+  #    - "5435:5432"
+  #  environment:
+  #    POSTGRES_DB: keycloak
+  #  volumes:
+  #    - keycloak-data:/var/lib/postgresql/da ta
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - bank-ms-net
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - bank-ms-net
+
+  postgres-accounts:
+    environment:
+      POSTGRES_DB: accounts-db
+    ports:
+      - '5432:5432'
+    volumes:
+      - accounts-db-data:/var/lib/postgresql
+    extends:
+      file: common.yml
+      service: postgres-parent-service
+
+  postgres-cards:
+    environment:
+      POSTGRES_DB: cards-db
+    ports:
+      - '5433:5432'
+    volumes:
+      - cards-db-data:/var/lib/postgresql
+    extends:
+      file: common.yml
+      service: postgres-parent-service
+    networks:
+      - bank-ms-net
+
+  postgres-loans:
+    environment:
+      POSTGRES_DB: loans-db
+    ports:
+      - '5434:5432'
+    volumes:
+      - loans-db-data:/var/lib/postgresql
+    extends:
+      file: common.yml
+      service: postgres-parent-service
+    networks:
+      - bank-ms-net
+
+  pgadmin:
+    extends:
+      file: common.yml
+      service: pgAdmin
+
+volumes:
+  accounts-db-data:
+  cards-db-data:
+  loans-db-data:
+  rmq-data:
+  keycloak-data:
+
+networks:
+  bank-ms-net:
+    driver: bridge
