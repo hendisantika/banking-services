@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: accounts
+  config:
+    import: "optional:configserver:http://localhost:8888/"
+
+  cloud:
+    stream:
+      bindings:
+        sendEmail-out-0: # unified naming conv
+          destination: send-notifications  # exchange name
+
+  rabbitmq:
+    username: yu71
+    password: 53cret
+    host: localhost
+    port: 5672
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 4
+      failure-rate-threshold: 50
+      permitted-number-of-calls-in-half-open-state: 2
+      wait-duration-in-open-state:
+        seconds: 4
+
+resilience4j.ratelimiter:
+  configs:
+    default:
+      limitForPeriod: 4
+      limitRefreshPeriod: 10s
+      timeoutDuration: 1s
+  instances:
+    accRL:
+      base-config: default
+
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1
