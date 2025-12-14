@@ -1,0 +1,105 @@
+package id.my.hendisantika.notificationservice;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import java.util.function.Function;
+
+/**
+ * Created by IntelliJ IDEA.
+ * Project : banking-services
+ * User: hendisantika
+ * Link: s.id/hendisantika
+ * Email: hendisantika@yahoo.co.id
+ * Telegram : @hendisantika34
+ * Date: 14/12/25
+ * Time: 07.01
+ * To change this template use File | Settings | File Templates.
+ */
+@Configuration
+@RequiredArgsConstructor
+public class MessageConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageConfig.class);
+    private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
+    @Value("${SMTP_USERNAME}")
+    private String From;
+
+    @Bean
+    public Function<AccountMsgDto, AccountMsgDto> email() {
+
+        return accountMsgDto -> {
+            logger.info("Hey, I am here in notification service");
+            try {
+                sendEmail(accountMsgDto);
+                logger.info("An email successfully sent to user with Email {}", accountMsgDto.email());
+            } catch (MessagingException e) {
+                logger.error(e.getMessage());
+            }
+            return accountMsgDto;
+        };
+    }
+
+    @Bean
+    public Function<AccountMsgDto, Long> sms() {
+        return accountMsgDto -> {
+            logger.info("An SMS successfully sent to user with Phone number {}", accountMsgDto.phone());
+            return accountMsgDto.accountNumber();
+        };
+    }
+
+
+    @Bean
+    public Function<AccountMsgDto, Long> transaction() {
+        return accountMsgDto -> {
+            logger.info("Notifying transaction with Phone number {} ", accountMsgDto.phone());
+            try {
+                mailSender.send(this.getMimeMsg(accountMsgDto));
+                logger.debug("An email successfully sent to user with Email {}", accountMsgDto.email());
+            } catch (MessagingException e) {
+                logger.error(e.getMessage());
+            }
+            return accountMsgDto.accountNumber();
+        };
+    }
+
+    private SimpleMailMessage getMimeMsg(AccountMsgDto accountMsgDto) throws MessagingException {
+        SimpleMailMessage mimeMessage = new SimpleMailMessage();
+        mimeMessage.setFrom(From);
+        mimeMessage.setText("Congrats! You bank account has been successfully registered!");
+        mimeMessage.setTo(accountMsgDto.email());
+        mimeMessage.setSubject("Welcome on board! bankerSite");
+        return mimeMessage;
+    }
+
+    @Async
+    public void sendEmail(AccountMsgDto accountMsgDto) throws MessagingException {
+        Context context = new Context();
+        context.setVariable("name", accountMsgDto.email());
+        context.setVariable("accountNumber", accountMsgDto.accountNumber());
+
+        String htmlContent = templateEngine.process("welcome.html", context);
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(accountMsgDto.email());
+        helper.setSubject("Welcome to BankerSite! 🎉🎉🎉");
+        helper.setText(htmlContent, true);
+
+        mailSender.send(message);
+        logger.info(" HTML welcome email sent successfully");
+    }
+}
