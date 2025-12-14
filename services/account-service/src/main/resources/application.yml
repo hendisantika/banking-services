@@ -11,8 +11,8 @@ spring:
           destination: send-notifications  # exchange name
 
   rabbitmq:
-    username: yu71
-    password: 53cret
+    username: admin
+    password: 1234
     host: localhost
     port: 5672
 

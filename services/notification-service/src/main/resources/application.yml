@@ -28,8 +28,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${SMTP_USERNAME}
-    password: ${SMTP_PASSWORD}
+    username: ${SMTP_USERNAME:test@example.com}
+    password: ${SMTP_PASSWORD:testpassword}
     properties:
       mail:
         smtp:
@@ -42,3 +42,6 @@ management:
     enabled: true
     sampling:
       probability: 1
+  health:
+    mail:
+      enabled: false

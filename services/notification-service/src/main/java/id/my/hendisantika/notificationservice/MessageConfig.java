@@ -35,7 +35,7 @@ public class MessageConfig {
     private static final Logger logger = LoggerFactory.getLogger(MessageConfig.class);
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
-    @Value("${SMTP_USERNAME}")
+    @Value("${SMTP_USERNAME:test@example.com}")
     private String From;
 
     @Bean
