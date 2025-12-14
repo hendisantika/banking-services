@@ -185,8 +185,8 @@ The API Gateway is secured with OAuth2/JWT using Keycloak:
 ### Database Management
 
 - pgAdmin: http://localhost:5050
-- Email: mohamecabdelaziz66@gmail.com
-- Password: 1234
+- Email: yuji@yopmail.com
+- Password: 53cret
 
 ### Message Broker
 

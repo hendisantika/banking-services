@@ -18,8 +18,8 @@ services:
     image: 'dpage/pgadmin4'
     container_name: pg_admin
     environment:
-      - PGADMIN_DEFAULT_EMAIL=mohamecabdelaziz66@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=1234
+      - PGADMIN_DEFAULT_EMAIL=yuji@yopmail.com
+      - PGADMIN_DEFAULT_PASSWORD=53cret
     ports:
       - '5050:80'
     depends_on:
