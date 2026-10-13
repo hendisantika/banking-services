@@ -3,7 +3,10 @@ package id.my.hendisantika.accountservice;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "microservices.cards.url=localhost:9000",
+        "microservices.loans.url=localhost:8090"
+})
 class AccountServiceApplicationTests {
 
     @Test
