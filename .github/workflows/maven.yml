@@ -18,6 +18,20 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - account-service
+          - api-gateway
+          - card-service
+          - config-server
+          - eureka-server
+          - loan-service
+          - notification-service
 
     steps:
     - uses: actions/checkout@v7
@@ -27,9 +41,14 @@ jobs:
         java-version: '25'
         distribution: 'temurin'
         cache: maven
+        cache-dependency-path: services/${{ matrix.service }}/pom.xml
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B package --file services/${{ matrix.service }}/pom.xml
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
+      if: github.event_name == 'push'
       uses: advanced-security/maven-dependency-submission-action@a64327a7329c9939cf675e458452febe1894a70c
+      with:
+        directory: services/${{ matrix.service }}
+        correlator: ${{ github.job }}-${{ matrix.service }}

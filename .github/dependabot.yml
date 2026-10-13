@@ -1,16 +1,40 @@
 version: 2
 updates:
   - package-ecosystem: maven
-    directory: "/"
+    directories:
+      - "/services/account-service"
+      - "/services/api-gateway"
+      - "/services/card-service"
+      - "/services/config-server"
+      - "/services/eureka-server"
+      - "/services/loan-service"
+      - "/services/notification-service"
     schedule:
       interval: daily
       time: '05:00'
       timezone: Asia/Jakarta
     open-pull-requests-limit: 10
+    groups:
+      spring:
+        patterns:
+          - "org.springframework*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+      time: '05:00'
+      timezone: Asia/Jakarta
+    open-pull-requests-limit: 10
+  - package-ecosystem: docker
+    directories:
+      - "/services/account-service"
+      - "/services/api-gateway"
+      - "/services/card-service"
+      - "/services/eureka-server"
+      - "/services/loan-service"
+      - "/services/notification-service"
+    schedule:
+      interval: weekly
       time: '05:00'
       timezone: Asia/Jakarta
     open-pull-requests-limit: 10
