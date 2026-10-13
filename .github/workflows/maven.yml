@@ -48,7 +48,10 @@ jobs:
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
       if: github.event_name == 'push'
+      # Requires the Dependency graph to be enabled in the repository settings
+      continue-on-error: true
       uses: advanced-security/maven-dependency-submission-action@a64327a7329c9939cf675e458452febe1894a70c
       with:
         directory: services/${{ matrix.service }}
+        ignore-maven-wrapper: true
         correlator: ${{ github.job }}-${{ matrix.service }}
