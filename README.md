@@ -1,5 +1,7 @@
 # Banking Services
 
+[![Java CI with Maven](https://github.com/hendisantika/banking-services/actions/workflows/maven.yml/badge.svg)](https://github.com/hendisantika/banking-services/actions/workflows/maven.yml)
+
 Banking Services using Microservice Architecture with Spring Cloud
 
 ## Architecture Overview
@@ -98,16 +100,15 @@ docker-compose up -d
 
 ### 2. Build All Services
 
+There is no aggregator POM; each service is a standalone Maven project. From the repository root:
+
 ```bash
-# Build each service
-cd services/config-server && ./mvnw clean package -DskipTests
-cd services/eureka-server && ./mvnw clean package -DskipTests
-cd services/api-gateway && ./mvnw clean package -DskipTests
-cd services/account-service && ./mvnw clean package -DskipTests
-cd services/card-service && ./mvnw clean package -DskipTests
-cd services/loan-service && ./mvnw clean package -DskipTests
-cd services/notification-service && ./mvnw clean package -DskipTests
+for s in config-server eureka-server api-gateway account-service card-service loan-service notification-service; do
+  (cd services/$s && ./mvnw clean package -DskipTests)
+done
 ```
+
+Drop `-DskipTests` to run the tests as well. They run without any infrastructure (no Config Server, databases, or RabbitMQ needed).
 
 ### 3. Start Services (in order)
 
@@ -194,10 +195,26 @@ The API Gateway is secured with OAuth2/JWT using Keycloak:
 - Username: admin
 - Password: 1234
 
+## Continuous Integration
+
+GitHub Actions ([`.github/workflows/maven.yml`](.github/workflows/maven.yml)) runs on every push and pull request to `main`:
+
+- Builds and tests each service as a separate matrix job on JDK 25 (Temurin)
+- On push, submits each service's Maven dependency graph to GitHub for Dependabot alerts
+
+Dependabot ([`.github/dependabot.yml`](.github/dependabot.yml)) keeps these up to date:
+
+- Maven dependencies for every service (daily, with Spring updates grouped)
+- GitHub Actions (daily)
+- Docker base images in the service `Dockerfile`s (weekly)
+
 ## Project Structure
 
 ```
 banking-services/
+├── .github/
+│   ├── workflows/maven.yml  # CI build (matrix per service)
+│   └── dependabot.yml       # Dependency update config
 ├── docker-composes/
 │   ├── default/          # Development environment
 │   └── qa/               # QA environment
@@ -209,6 +226,7 @@ banking-services/
 │   ├── card-service/     # Card domain
 │   ├── loan-service/     # Loan domain
 │   └── notification-service/  # Notifications
+├── docs/                 # Architecture notes & mock data
 └── README.md
 ```
 
@@ -227,4 +245,4 @@ banking-services/
 
 ## License
 
-This project is for educational purposes.
+This project is licensed under the [Apache License 2.0](LICENSE).
